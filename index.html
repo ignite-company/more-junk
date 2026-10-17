@@ -1717,6 +1717,161 @@ padding:22px 20px 23px;
   #ignite-form-modal-v8 .quiz-slide-inner { min-height: 0; }
 }
 
+
+
+/* Short funnel: strong tap confirmation and three-row mobile answer grids. */
+#ignite-form-modal-v8 .quiz-option {
+  transition: background-color .16s ease, border-color .16s ease, box-shadow .16s ease, transform .16s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+#ignite-form-modal-v8 .quiz-option.selected {
+  background: linear-gradient(150deg, #ff4266 0%, #e82150 100%);
+  border-color: #ff8a9e;
+  color: #fff;
+  box-shadow: 0 8px 25px rgba(255,45,85,.32);
+  transform: scale(.985);
+}
+#ignite-form-modal-v8 .quiz-option.selected .option-check {
+  color: #fff;
+  background: rgba(92,0,28,.25);
+  border-color: rgba(255,255,255,.58);
+}
+@media (max-width: 680px) {
+  #ignite-form-modal-v8 .quiz-header {
+    padding: 13px 16px 11px;
+    gap: 10px;
+  }
+  #ignite-form-modal-v8 .quiz-title {
+    font-size: clamp(18px,5.5vw,25px);
+    line-height: 1.1;
+  }
+  #ignite-form-modal-v8 .quiz-meta {
+    margin-top: 5px;
+  }
+  #ignite-form-modal-v8 .quiz-close {
+    width: 38px;
+    height: 38px;
+    font-size: 23px;
+  }
+  #ignite-form-modal-v8 .quiz-slide {
+    padding: 15px 16px 18px;
+  }
+  #ignite-form-modal-v8 .quiz-slide-inner {
+    min-height: 0;
+    justify-content: flex-start;
+  }
+  #ignite-form-modal-v8 .quiz-kicker {
+    margin-bottom: 7px;
+  }
+  #ignite-form-modal-v8 .quiz-question {
+    font-size: clamp(23px, 6.1vw, 31px);
+    line-height: 1.1;
+    margin-bottom: 7px;
+  }
+  #ignite-form-modal-v8 .quiz-description {
+    font-size: 13px;
+    line-height: 1.42;
+    margin-bottom: 12px;
+  }
+  #ignite-form-modal-v8 .quiz-options[data-single] {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 9px;
+  }
+  #ignite-form-modal-v8 .quiz-options[data-single] .quiz-option {
+    position: relative;
+    min-height: 75px;
+    padding: 12px 10px;
+    border-radius: 14px;
+    justify-content: center;
+    text-align: center;
+    align-items: center;
+  }
+  #ignite-form-modal-v8 .quiz-options[data-single] .quiz-option span:first-child {
+    flex: 1 1 auto;
+    font-size: clamp(12px, 3.4vw, 14px);
+    line-height: 1.25;
+    font-weight: 670;
+    overflow-wrap: anywhere;
+  }
+  #ignite-form-modal-v8 .quiz-options[data-single] .option-check {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    width: 17px;
+    height: 17px;
+    font-size: 11px;
+  }
+  #ignite-form-modal-v8 .single-back {
+    min-height: 40px;
+    margin-top: 12px;
+    padding: 0 18px;
+    font-size: 13px;
+  }
+  #ignite-form-modal-v8 .contact-slide .quiz-field {
+    margin-bottom: 8px;
+  }
+  #ignite-form-modal-v8 .contact-slide .quiz-field label {
+    margin-bottom: 5px;
+  }
+  #ignite-form-modal-v8 .contact-slide .quiz-input,
+  #ignite-form-modal-v8 .contact-slide .phone-control,
+  #ignite-form-modal-v8 .contact-slide .country-prefix,
+  #ignite-form-modal-v8 .contact-slide .phone-input {
+    min-height: 44px;
+  }
+  #ignite-form-modal-v8 .contact-slide .quiz-question {
+    font-size: clamp(23px, 6vw, 28px);
+  }
+  #ignite-form-modal-v8 .contact-slide .quiz-actions {
+    margin-top: 10px;
+  }
+  #ignite-form-modal-v8 .quiz-primary {
+    min-height: 44px;
+  }
+  #ignite-form-modal-v8 .calendar-heading {
+    margin-bottom: 12px;
+  }
+  #ignite-form-modal-v8 .calendar-window {
+    border-radius: 14px;
+    min-height: 270px;
+    height: max(290px, calc(var(--quiz-vh) - 245px));
+  }
+}
+@media (max-width: 360px) {
+  #ignite-form-modal-v8 .quiz-options[data-single] {
+    gap: 7px;
+  }
+  #ignite-form-modal-v8 .quiz-options[data-single] .quiz-option {
+    min-height: 71px;
+    padding: 9px 7px;
+  }
+  #ignite-form-modal-v8 .quiz-options[data-single] .quiz-option span:first-child {
+    font-size: 12px;
+  }
+  #ignite-form-modal-v8 .quiz-question {
+    font-size: 23px;
+  }
+}
+@media (max-height: 575px) and (max-width: 680px) {
+  #ignite-form-modal-v8 .quiz-header {
+    padding-top: 9px;
+    padding-bottom: 9px;
+  }
+  #ignite-form-modal-v8 .quiz-slide {
+    padding-top: 11px;
+    padding-bottom: 12px;
+  }
+  #ignite-form-modal-v8 .quiz-options[data-single] .quiz-option {
+    min-height: 62px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  #ignite-form-modal-v8 .quiz-option {
+    transition: none;
+  }
+}
+
 </style>
 
 <div id="ignite-funnel-v8">
@@ -2478,11 +2633,11 @@ Continue
     <h3 class="quiz-question">What's your biggest challenge right now?</h3>
     <p class="quiz-description">Choose the one that is costing you the most opportunity.</p>
     <div class="quiz-options" data-single="biggest_challenge">
-      <button type="button" class="quiz-option" data-value="Not generating enough leads"><span>Not generating enough leads</span><span class="option-check">✓</span></button>
-      <button type="button" class="quiz-option" data-value="Leads aren't turning into booked jobs"><span>Leads aren't turning into booked jobs</span><span class="option-check">✓</span></button>
-      <button type="button" class="quiz-option" data-value="Missing calls or following up too slowly"><span>Missing calls or following up too slowly</span><span class="option-check">✓</span></button>
-      <button type="button" class="quiz-option" data-value="Inconsistent jobs and revenue"><span>Inconsistent jobs and revenue</span><span class="option-check">✓</span></button>
-      <button type="button" class="quiz-option" data-value="Scaling without the right systems"><span>Scaling without the right systems</span><span class="option-check">✓</span></button>
+      <button type="button" class="quiz-option" data-value="Not generating enough leads"><span>Not enough leads</span><span class="option-check">✓</span></button>
+      <button type="button" class="quiz-option" data-value="Leads aren't turning into booked jobs"><span>Leads not booking</span><span class="option-check">✓</span></button>
+      <button type="button" class="quiz-option" data-value="Missing calls or following up too slowly"><span>Slow follow-up</span><span class="option-check">✓</span></button>
+      <button type="button" class="quiz-option" data-value="Inconsistent jobs and revenue"><span>Inconsistent jobs</span><span class="option-check">✓</span></button>
+      <button type="button" class="quiz-option" data-value="Scaling without the right systems"><span>Need better systems</span><span class="option-check">✓</span></button>
       <button type="button" class="quiz-option" data-value="Something else"><span>Something else</span><span class="option-check">✓</span></button>
     </div>
     <p class="quiz-submit-error" id="ignite-submit-error-v8" role="alert" hidden>We couldn't save your details. Please tap your answer again.</p>
@@ -2549,7 +2704,7 @@ type="text/javascript"
 (function () {
   "use strict";
   const SESSION_ENDPOINT = "https://ujvuqbgheewbyvfusqvz.supabase.co/functions/v1/ignite-funnel-session";
-  const PRE_CALL_URL = "https://pre-call.vercel.app/";
+  const PRE_CALL_URL = "https://pre-call-three.vercel.app/";
   const modal = document.getElementById("ignite-form-modal-v8");
   const stage = document.getElementById("ignite-quiz-stage-v8");
   const progressBar = document.getElementById("ignite-quiz-progress-v8");
@@ -2584,6 +2739,7 @@ type="text/javascript"
   let submissionPending = false;
   let submissionSaved = false;
   let bookingRedirected = false;
+  let selectionTransitioning = false;
 
   function syncViewport() {
     const vv = window.visualViewport;
@@ -2734,22 +2890,35 @@ type="text/javascript"
   modal.querySelectorAll("[data-single]").forEach(group => {
     const key = group.dataset.single;
     group.querySelectorAll(".quiz-option").forEach(option => {
+      option.setAttribute("aria-pressed", option.classList.contains("selected") ? "true" : "false");
       option.addEventListener("click", () => {
-        if (submissionPending) return;
-        group.querySelectorAll(".quiz-option").forEach(btn => btn.classList.remove("selected"));
+        if (selectionTransitioning || submissionPending || submissionSaved) return;
+        selectionTransitioning = true;
+        group.querySelectorAll(".quiz-option").forEach(btn => {
+          btn.classList.remove("selected");
+          btn.setAttribute("aria-pressed","false");
+        });
         option.classList.add("selected");
+        option.setAttribute("aria-pressed","true");
         state[key] = option.dataset.value;
-        if (key === "monthly_leads") {
-          state.last_quiz_step = "monthly_leads";
-          showSlide("biggest_challenge");
-        } else if (key === "biggest_challenge") {
-          submitAndShowCalendar();
-        }
+        // Give the choice a clearly visible red selected state before continuing.
+        const reducedMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        window.setTimeout(() => {
+          selectionTransitioning = false;
+          if (key === "monthly_leads") {
+            state.last_quiz_step = "monthly_leads";
+            showSlide("biggest_challenge");
+          } else if (key === "biggest_challenge") {
+            submitAndShowCalendar();
+          }
+        }, reducedMotion ? 180 : 480);
       });
     });
   });
   modal.querySelectorAll("[data-back]").forEach(button =>
-    button.addEventListener("click", () => { if (!submissionPending) showSlide(button.dataset.back); })
+    button.addEventListener("click", () => {
+      if (!selectionTransitioning && !submissionPending) showSlide(button.dataset.back);
+    })
   );
 
   function prepareCalendar() {
