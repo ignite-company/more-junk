@@ -1930,6 +1930,102 @@ padding:22px 20px 23px;
   }
 }
 
+
+/* Mobile quiz is a real page, not a fixed-height popup. Safari may resize its
+   visual viewport for the keyboard without ever clipping the quiz document. */
+@media (max-width: 680px) {
+  html:has(body.ignite-quiz-page-open),
+  body.ignite-quiz-page-open {
+    height: auto !important;
+    min-height: 100% !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    overscroll-behavior-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  body.ignite-quiz-page-open #ignite-funnel-v8 {
+    display: none !important;
+  }
+  body.ignite-quiz-page-open #ignite-form-modal-v8.open {
+    position: relative !important;
+    display: block !important;
+    inset: auto !important;
+    top: auto !important;
+    left: auto !important;
+    right: auto !important;
+    bottom: auto !important;
+    width: 100% !important;
+    min-height: 100svh;
+    height: auto !important;
+    max-height: none !important;
+    padding: 0 !important;
+    overflow: visible !important;
+    background: #111113;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    overscroll-behavior: auto;
+    touch-action: pan-y;
+  }
+  body.ignite-quiz-page-open #ignite-form-modal-v8 .quiz-shell {
+    position: relative;
+    display: block !important;
+    width: 100% !important;
+    max-width: none !important;
+    min-height: 100svh;
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    background: #111113;
+  }
+  body.ignite-quiz-page-open #ignite-form-modal-v8 .quiz-stage {
+    display: block;
+    width: 100%;
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    overflow: visible !important;
+    overscroll-behavior: auto;
+    -webkit-overflow-scrolling: auto;
+    touch-action: pan-y;
+  }
+  body.ignite-quiz-page-open #ignite-form-modal-v8 .quiz-slide,
+  body.ignite-quiz-page-open #ignite-form-modal-v8 .quiz-slide-inner {
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    overflow: visible !important;
+  }
+  body.ignite-quiz-page-open #ignite-form-modal-v8 .quiz-slide {
+    padding: 20px 18px max(36px, env(safe-area-inset-bottom));
+  }
+  body.ignite-quiz-page-open #ignite-form-modal-v8 .quiz-header {
+    padding: max(19px,env(safe-area-inset-top)) 18px 15px;
+  }
+  body.ignite-quiz-page-open #ignite-form-modal-v8 .contact-slide .quiz-actions {
+    position: static !important;
+    padding: 6px 0 12px !important;
+    background: transparent !important;
+  }
+  body.ignite-quiz-page-open #ignite-form-modal-v8 .calendar-window {
+    height: auto !important;
+    max-height: none !important;
+    min-height: 700px !important;
+    overflow: visible !important;
+  }
+  body.ignite-quiz-page-open #ignite-form-modal-v8 .calendar-window iframe {
+    min-height: 700px !important;
+  }
+  body.ignite-quiz-page-open #ignite-form-modal-v8 .quiz-input,
+  body.ignite-quiz-page-open #ignite-form-modal-v8 .phone-input {
+    font-size: 16px !important;
+  }
+}
+
 </style>
 
 <div id="ignite-funnel-v8">
@@ -2799,65 +2895,27 @@ type="text/javascript"
   let bookingRedirected = false;
   let selectionTransitioning = false;
 
-  // Safari changes its visual viewport in several steps while the keyboard animates.
-  // Update at most once per frame. The mobile sheet keeps its grid structure stable.
-  let viewportFrame = 0;
-  let focusScrollFrame = 0;
-  function keepFocusedInputVisible() {
-    if (window.innerWidth > 680 || !modal.classList.contains("open")) return;
-    const focused = document.activeElement;
-    if (!focused || !stage.contains(focused) ||
-        !focused.matches("input,textarea,select")) return;
-    const viewport = stage.getBoundingClientRect();
-    const field = focused.getBoundingClientRect();
-    const inset = 16;
-    if (field.bottom > viewport.bottom - inset) {
-      stage.scrollTop += field.bottom - (viewport.bottom - inset);
-    } else if (field.top < viewport.top + inset) {
-      stage.scrollTop -= viewport.top + inset - field.top;
-    }
-  }
+  // On mobile, present the quiz as a naturally scrollable page.
+  // Never resize or crop its outer container when the iOS keyboard appears.
+  const mobileQuiz = () => window.matchMedia("(max-width: 680px)").matches;
+  let landingScroll = 0;
   function syncViewport() {
+    if (mobileQuiz()) return;
     const vv = window.visualViewport;
     const height = vv ? vv.height : window.innerHeight;
     const top = vv ? vv.offsetTop : 0;
     if (!Number.isFinite(height) || height <= 0) return;
     modal.style.setProperty("--quiz-vh", Math.round(height) + "px");
     modal.style.setProperty("--quiz-top", Math.round(top) + "px");
-    if (modal.classList.contains("open") && stage.contains(document.activeElement)) {
-      cancelAnimationFrame(focusScrollFrame);
-      focusScrollFrame = requestAnimationFrame(keepFocusedInputVisible);
-    }
   }
   function requestViewportSync() {
-    if (viewportFrame) return;
-    viewportFrame = requestAnimationFrame(() => {
-      viewportFrame = 0;
-      syncViewport();
-    });
+    if (!mobileQuiz()) syncViewport();
   }
   window.addEventListener("resize", requestViewportSync, { passive: true });
   if (window.visualViewport) {
     window.visualViewport.addEventListener("resize", requestViewportSync, { passive: true });
     window.visualViewport.addEventListener("scroll", requestViewportSync, { passive: true });
   }
-  // Scroll the focused field inside the form, never the whole landing page.
-  modal.addEventListener("focusin", event => {
-    if (!event.target.matches("input,textarea,select")) return;
-    requestViewportSync();
-    requestAnimationFrame(keepFocusedInputVisible);
-    // iOS keyboard height often settles after the initial focus event.
-    window.setTimeout(requestViewportSync, 160);
-    window.setTimeout(requestViewportSync, 360);
-  });
-  modal.addEventListener("focusout", event => {
-    if (!event.target.matches("input,textarea,select")) return;
-    // The visual viewport may recover after Safari's keyboard-close animation.
-    window.setTimeout(requestViewportSync, 80);
-    window.setTimeout(requestViewportSync, 250);
-    window.setTimeout(requestViewportSync, 500);
-  });
-  window.addEventListener("pageshow", requestViewportSync, { passive: true });
 
   function showSlide(name) {
     const target = modal.querySelector('[data-slide="' + name + '"]');
@@ -2867,6 +2925,10 @@ type="text/javascript"
     progressBar.style.width = (target.dataset.progress || "25") + "%";
     stepLabel.textContent = target.dataset.label || "";
     stage.scrollTop = 0;
+    if (mobileQuiz()) {
+      // Question transitions start at the top of the real document.
+      requestAnimationFrame(() => window.scrollTo(0, 0));
+    }
     if (name === "calendar") {
       prepareCalendar();
     }
@@ -2874,21 +2936,41 @@ type="text/javascript"
 
   function openQuiz(event) {
     previousFocus = event && event.currentTarget || document.activeElement;
-    syncViewport();
     oldBodyOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
+    if (mobileQuiz()) {
+      landingScroll = window.scrollY;
+      document.body.classList.add("ignite-quiz-page-open");
+      document.body.style.overflow = "auto";
+    } else {
+      syncViewport();
+      document.body.style.overflow = "hidden";
+    }
     modal.classList.add("open");
     modal.setAttribute("aria-hidden","false");
     showSlide(submissionSaved ? "calendar" : "contact");
-    closeButton.focus();
+    if (mobileQuiz()) window.scrollTo(0, 0);
+    try { closeButton.focus({preventScroll: true}); } catch (_) { closeButton.focus(); }
   }
 
   function closeQuiz() {
+    const wasMobilePage = document.body.classList.contains("ignite-quiz-page-open");
+    const focused = document.activeElement;
+    if (focused && modal.contains(focused) && focused.blur) focused.blur();
+    document.body.classList.remove("ignite-quiz-page-open");
     modal.classList.remove("open");
     modal.setAttribute("aria-hidden","true");
     document.body.style.overflow = oldBodyOverflow;
-    requestViewportSync();
-    if (previousFocus && previousFocus.focus) previousFocus.focus();
+    if (wasMobilePage) {
+      requestAnimationFrame(() => {
+        window.scrollTo(0, landingScroll);
+        if (previousFocus && previousFocus.focus) {
+          try { previousFocus.focus({preventScroll: true}); } catch (_) {}
+        }
+      });
+    } else {
+      requestViewportSync();
+      if (previousFocus && previousFocus.focus) previousFocus.focus();
+    }
   }
 
   document.querySelectorAll(".ignite-open-quiz").forEach(btn => btn.addEventListener("click",openQuiz));
@@ -2948,7 +3030,11 @@ type="text/javascript"
     return true;
   }
   contactContinue.addEventListener("click", () => {
-    if (contactValid()) showSlide("monthly_leads");
+    if (contactValid()) {
+      // Dismiss the keyboard before showing the first multiple-choice question.
+      if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
+      showSlide("monthly_leads");
+    }
   });
   modal.querySelectorAll(".contact-slide input").forEach(input => {
     input.addEventListener("keydown", event => {
