@@ -1872,6 +1872,63 @@ padding:22px 20px 23px;
   }
 }
 
+
+/* iOS keyboard-safe modal: the outer sheet stays anchored while only its contents scroll. */
+@media (max-width: 680px) {
+  #ignite-form-modal-v8.open {
+    display: grid;
+    place-items: stretch;
+    overflow: hidden;
+    padding: max(8px, env(safe-area-inset-top)) 8px max(8px, env(safe-area-inset-bottom));
+    overscroll-behavior: none;
+  }
+  #ignite-form-modal-v8 .quiz-shell {
+    width: 100%;
+    max-width: 100%;
+    height: 100%;
+    min-height: 0;
+    max-height: 100%;
+    border-radius: 24px;
+    grid-template-rows: auto 4px minmax(0, 1fr);
+    overflow: hidden;
+  }
+  #ignite-form-modal-v8 .quiz-stage {
+    display: block;
+    height: 100%;
+    min-height: 0;
+    max-height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+    overscroll-behavior-y: contain;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-y;
+    scroll-padding-top: 12px;
+    scroll-padding-bottom: 16px;
+  }
+  #ignite-form-modal-v8 .quiz-slide,
+  #ignite-form-modal-v8 .quiz-slide-inner {
+    min-height: 0;
+  }
+  #ignite-form-modal-v8 .quiz-slide.active {
+    display: block;
+  }
+  #ignite-form-modal-v8 .contact-slide .quiz-slide-inner {
+    justify-content: flex-start;
+    padding-bottom: 12px;
+  }
+  #ignite-form-modal-v8 .quiz-header {
+    flex-shrink: 0;
+  }
+  #ignite-form-modal-v8 .quiz-input,
+  #ignite-form-modal-v8 .phone-input {
+    font-size: 16px; /* prevents focus zoom on iPhone */
+  }
+  #ignite-form-modal-v8 .quiz-stage::-webkit-scrollbar {
+    width: 0;
+    display: none;
+  }
+}
+
 </style>
 
 <div id="ignite-funnel-v8">
@@ -2741,16 +2798,65 @@ type="text/javascript"
   let bookingRedirected = false;
   let selectionTransitioning = false;
 
+  // Safari changes its visual viewport in several steps while the keyboard animates.
+  // Update at most once per frame. The mobile sheet keeps its grid structure stable.
+  let viewportFrame = 0;
+  let focusScrollFrame = 0;
+  function keepFocusedInputVisible() {
+    if (window.innerWidth > 680 || !modal.classList.contains("open")) return;
+    const focused = document.activeElement;
+    if (!focused || !stage.contains(focused) ||
+        !focused.matches("input,textarea,select")) return;
+    const viewport = stage.getBoundingClientRect();
+    const field = focused.getBoundingClientRect();
+    const inset = 16;
+    if (field.bottom > viewport.bottom - inset) {
+      stage.scrollTop += field.bottom - (viewport.bottom - inset);
+    } else if (field.top < viewport.top + inset) {
+      stage.scrollTop -= viewport.top + inset - field.top;
+    }
+  }
   function syncViewport() {
     const vv = window.visualViewport;
-    modal.style.setProperty("--quiz-vh", (vv ? vv.height : innerHeight) + "px");
-    modal.style.setProperty("--quiz-top", (vv ? vv.offsetTop : 0) + "px");
+    const height = vv ? vv.height : window.innerHeight;
+    const top = vv ? vv.offsetTop : 0;
+    if (!Number.isFinite(height) || height <= 0) return;
+    modal.style.setProperty("--quiz-vh", Math.round(height) + "px");
+    modal.style.setProperty("--quiz-top", Math.round(top) + "px");
+    if (modal.classList.contains("open") && stage.contains(document.activeElement)) {
+      cancelAnimationFrame(focusScrollFrame);
+      focusScrollFrame = requestAnimationFrame(keepFocusedInputVisible);
+    }
   }
-  window.addEventListener("resize", syncViewport);
+  function requestViewportSync() {
+    if (viewportFrame) return;
+    viewportFrame = requestAnimationFrame(() => {
+      viewportFrame = 0;
+      syncViewport();
+    });
+  }
+  window.addEventListener("resize", requestViewportSync, { passive: true });
   if (window.visualViewport) {
-    visualViewport.addEventListener("resize", syncViewport);
-    visualViewport.addEventListener("scroll", syncViewport);
+    window.visualViewport.addEventListener("resize", requestViewportSync, { passive: true });
+    window.visualViewport.addEventListener("scroll", requestViewportSync, { passive: true });
   }
+  // Scroll the focused field inside the form, never the whole landing page.
+  modal.addEventListener("focusin", event => {
+    if (!event.target.matches("input,textarea,select")) return;
+    requestViewportSync();
+    requestAnimationFrame(keepFocusedInputVisible);
+    // iOS keyboard height often settles after the initial focus event.
+    window.setTimeout(requestViewportSync, 160);
+    window.setTimeout(requestViewportSync, 360);
+  });
+  modal.addEventListener("focusout", event => {
+    if (!event.target.matches("input,textarea,select")) return;
+    // The visual viewport may recover after Safari's keyboard-close animation.
+    window.setTimeout(requestViewportSync, 80);
+    window.setTimeout(requestViewportSync, 250);
+    window.setTimeout(requestViewportSync, 500);
+  });
+  window.addEventListener("pageshow", requestViewportSync, { passive: true });
 
   function showSlide(name) {
     const target = modal.querySelector('[data-slide="' + name + '"]');
@@ -2780,6 +2886,7 @@ type="text/javascript"
     modal.classList.remove("open");
     modal.setAttribute("aria-hidden","true");
     document.body.style.overflow = oldBodyOverflow;
+    requestViewportSync();
     if (previousFocus && previousFocus.focus) previousFocus.focus();
   }
 
