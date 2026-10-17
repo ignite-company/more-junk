@@ -1004,7 +1004,8 @@ font-size:14px;
 
 #ignite-funnel-v8 .hero-vsl{
 width:min(170px,44vw);
-margin-top:7px;border-radius:19px;
+margin-top:7px;
+border-radius:19px;
 }
 
 #ignite-funnel-v8 .hero-vsl-label{
@@ -1598,6 +1599,116 @@ padding:22px 20px 23px;
 
 }
 
+
+/* Modal layout fix: isolate its box model from embedded page styles. */
+#ignite-form-modal-v8,
+#ignite-form-modal-v8 *,
+#ignite-form-modal-v8 *::before,
+#ignite-form-modal-v8 *::after {
+  box-sizing: border-box;
+}
+#ignite-form-modal-v8 {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+#ignite-form-modal-v8 .quiz-shell {
+  box-sizing: border-box;
+  min-width: 0;
+  max-width: calc(100vw - 24px);
+  min-height: 0;
+}
+#ignite-form-modal-v8 .quiz-header > div,
+#ignite-form-modal-v8 .quiz-stage,
+#ignite-form-modal-v8 .quiz-slide,
+#ignite-form-modal-v8 .quiz-slide-inner,
+#ignite-form-modal-v8 .quiz-field,
+#ignite-form-modal-v8 .quiz-actions,
+#ignite-form-modal-v8 .quiz-options {
+  min-width: 0;
+  max-width: 100%;
+}
+#ignite-form-modal-v8 .quiz-header > div { flex: 1 1 auto; }
+#ignite-form-modal-v8 .quiz-title { overflow-wrap: anywhere; }
+#ignite-form-modal-v8 .quiz-close,
+#ignite-form-modal-v8 .country-prefix { flex-shrink: 0; }
+#ignite-form-modal-v8 .quiz-stage {
+  width: 100%;
+  min-height: 0;
+  max-height: 100%;
+  overscroll-behavior-y: contain;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255,255,255,.2) transparent;
+}
+#ignite-form-modal-v8 .quiz-input,
+#ignite-form-modal-v8 .phone-control,
+#ignite-form-modal-v8 .quiz-option { max-width: 100%; }
+#ignite-form-modal-v8 .phone-input {
+  min-width: 0;
+  width: 1%;
+  flex: 1 1 auto;
+}
+#ignite-form-modal-v8 .quiz-question,
+#ignite-form-modal-v8 .quiz-description,
+#ignite-form-modal-v8 .quiz-option span:first-child { overflow-wrap: break-word; }
+#ignite-form-modal-v8 .contact-slide .quiz-slide-inner { min-height: 0; }
+#ignite-form-modal-v8 .contact-slide .quiz-kicker { margin-bottom: 8px; }
+#ignite-form-modal-v8 .contact-slide .quiz-question {
+  font-size: clamp(25px, 3.6vw, 34px);
+  margin-bottom: 8px;
+}
+#ignite-form-modal-v8 .contact-slide .quiz-description { margin-bottom: 16px; }
+#ignite-form-modal-v8 .contact-slide .quiz-field { margin-bottom: 10px; }
+#ignite-form-modal-v8 .contact-slide .quiz-input,
+#ignite-form-modal-v8 .contact-slide .phone-control,
+#ignite-form-modal-v8 .contact-slide .country-prefix,
+#ignite-form-modal-v8 .contact-slide .phone-input { min-height: 48px; }
+#ignite-form-modal-v8 .contact-slide .quiz-actions { margin-top: 13px; }
+#ignite-form-modal-v8 .quiz-primary:focus-visible,
+#ignite-form-modal-v8 .quiz-back:focus-visible,
+#ignite-form-modal-v8 .quiz-close:focus-visible,
+#ignite-form-modal-v8 .quiz-option:focus-visible,
+#ignite-form-modal-v8 .quiz-input:focus-visible,
+#ignite-form-modal-v8 .phone-control:focus-within {
+  outline: 2px solid #ff496b;
+  outline-offset: 2px;
+}
+#ignite-form-modal-v8 .quiz-option:disabled { opacity: .65; cursor: wait; }
+#ignite-form-modal-v8 .quiz-submit-error {
+  margin-top: 14px;
+  color: #ff8c9d;
+  font-size: 13px;
+  line-height: 1.5;
+  text-align: center;
+}
+#ignite-form-modal-v8 .quiz-submit-error[hidden] { display: none; }
+@media (max-width: 680px) {
+  #ignite-form-modal-v8 .quiz-shell { max-width: calc(100vw - 16px); }
+  #ignite-form-modal-v8 .quiz-header { gap: 10px; }
+  #ignite-form-modal-v8 .quiz-title { font-size: clamp(19px, 5.8vw, 26px); }
+  #ignite-form-modal-v8 .quiz-close { width: 40px; height: 40px; font-size: 25px; }
+  #ignite-form-modal-v8 .quiz-meta { flex-wrap: wrap; gap: 6px; font-size: 11px; }
+  #ignite-form-modal-v8 .contact-slide .quiz-description { margin-bottom: 12px; }
+  #ignite-form-modal-v8 .quiz-option { padding: 12px 14px; font-size: 13px; }
+  #ignite-form-modal-v8 .quiz-option .option-check { flex-shrink: 0; }
+}
+@media (max-height: 620px) {
+  #ignite-form-modal-v8 .contact-slide .quiz-actions {
+    position: sticky;
+    bottom: 0;
+    z-index: 3;
+    padding: 10px 0 4px;
+    background: linear-gradient(180deg, rgba(18,18,20,.80), #121214 35%);
+  }
+  #ignite-form-modal-v8 { padding: 8px; }
+  #ignite-form-modal-v8 .quiz-shell { max-height: calc(var(--quiz-vh) - 16px); }
+  #ignite-form-modal-v8 .quiz-header { padding-top: 13px; padding-bottom: 12px; }
+  #ignite-form-modal-v8 .quiz-stage { min-height: 0; height: auto; }
+  #ignite-form-modal-v8 .quiz-slide { padding-top: 18px; padding-bottom: 20px; }
+  #ignite-form-modal-v8 .quiz-slide-inner { min-height: 0; }
+}
+
 </style>
 
 <div id="ignite-funnel-v8">
@@ -2003,6 +2114,7 @@ terms are governed by the signed client agreement.
 <div class="wrap">
 
 <div class="center">
+
 <div class="eyebrow">
 Who This Is For
 </div>
@@ -2546,6 +2658,10 @@ data-value="$5,000+"
 
 </div>
 
+<p class="quiz-submit-error" id="ignite-submit-error-v8" role="alert" hidden>
+  We couldn't save your answers. Please check your connection and tap your answer again.
+</p>
+
 <button
 type="button"
 class="quiz-back single-back"
@@ -3003,6 +3119,7 @@ name +
 );
 
 }
+
 function showSlide(
 name,
 backwards
@@ -3494,7 +3611,17 @@ true;
 
 }
 
+var submissionPending = false;
+var submissionSaved = false;
+
 function routeAfterInvestment(){
+
+if (submissionPending || submissionSaved) return;
+submissionPending = true;
+var submitError = document.getElementById('ignite-submit-error-v8');
+var investmentButtons = [].slice.call(modal.querySelectorAll('[data-single="investment_range"] .quiz-option'));
+if (submitError) submitError.hidden = true;
+investmentButtons.forEach(function(button){ button.disabled = true; });
 
 var owner =
 state.business_stage ===
@@ -3553,13 +3680,16 @@ saveCompletedLead()
 .then(
 function(success){
 
-if(
-!success
-){
-
-return;
-
+submissionPending = false;
+investmentButtons.forEach(function(button){ button.disabled = false; });
+if (!success) {
+  if (submitError) {
+    submitError.hidden = false;
+    submitError.textContent = 'We couldn\'t save your answers. Please check your connection and tap your answer again.';
+  }
+  return;
 }
+submissionSaved = true;
 
 fireMetaLeadEvent();
 
@@ -3583,6 +3713,15 @@ delayedSlide(
 );
 
 }
+
+[].slice.call(modal.querySelectorAll('.contact-slide input')).forEach(function(input){
+  input.addEventListener('keydown', function(event){
+    if (event.key === 'Enter' && !event.isComposing) {
+      event.preventDefault();
+      contactContinue.click();
+    }
+  });
+});
 
 contactContinue.addEventListener(
 'click',
@@ -4001,7 +4140,8 @@ payload
 
 var text =
 JSON.stringify(
-payload || '')
+payload || ''
+)
 .toLowerCase();
 
 return (
